@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0878ff"><meta name="description" content="Ob-Havo Uz — O‘zbekiston uchun zamonaviy ob-havo xizmati">
+  <title>Ob-Havo Uz | AKBARJON COMPANY</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="weatherEffects" aria-hidden="true"></div>
+  <header class="topbar"><div class="brand"><div class="logo-mark">☁</div><div><h1>Ob-Havo <span>Uz</span></h1><p>AKBARJON COMPANY</p></div></div>
+    <div class="header-actions"><button id="shareBtn" class="share-btn">↗️ Ulashish</button>
+          <button id="telegramBtn" class="telegram-btn">✈️ Telegram</button><button id="locationBtn" class="location-btn">📍 Joylashuvim</button></div>
+  </header>
+  <main class="container">
+    <section class="hero"><div class="company-badge">✦ AKBARJON COMPANY</div><h2>Ob-havoni <span>aniq va tez</span> bilib oling</h2><p>Shahar, tuman yoki qishloq nomini kiriting.</p>
+      <form id="searchForm" class="search"><input id="cityInput" type="text" placeholder="Masalan: Qarshi, Kitob, Shahrisabz..." autocomplete="off"><button type="submit">🔎 Qidirish</button></form><div id="message" class="message"></div>
+    </section>
+    <section id="weather" class="weather-card hidden"><div class="weather-head"><div><p class="muted">Hozirgi ob-havo</p><h2 id="placeName">Qarshi</h2><p id="updated" class="muted"></p></div><div id="weatherIcon" class="weather-icon">☀️</div></div>
+      <div class="current"><div class="temperature"><span id="temperature">--</span><sup>°C</sup></div><div><h3 id="condition">--</h3><p>His qilinishi: <strong id="feels">--</strong>°C</p></div></div>
+      <div class="stats"><div><span>💧</span><b id="humidity">--%</b><small>Namlik</small></div><div><span>💨</span><b id="wind">-- km/soat</b><small>Shamol</small></div><div><span>🌡️</span><b id="pressure">-- hPa</b><small>Bosim</small></div><div><span>👁️</span><b id="visibility">-- km</b><small>Ko‘rinish</small></div></div>
+    </section>
+    <section id="forecastSection" class="forecast-section hidden"><div class="section-title"><h2>7 kunlik prognoz</h2><span>Har kuni yangilanadi</span></div><div id="forecast" class="forecast"></div></section>
+    <section class="cities"><h2>🇺🇿 O‘zbekiston shaharlari</h2><div class="city-buttons"><button data-city="Tashkent">Toshkent</button><button data-city="Samarkand">Samarqand</button><button data-city="Bukhara">Buxoro</button><button data-city="Qarshi">Qarshi</button><button data-city="Namangan">Namangan</button><button data-city="Andijan">Andijon</button><button data-city="Fergana">Farg‘ona</button><button data-city="Nukus">Nukus</button><button data-city="Shahrisabz">Shahrisabz</button><button data-city="Kitob">Kitob</button></div></section>
+    <section class="share-card"><div><h2>Ob-Havo Uz yoqdimi? 🌤️</h2><p>Do‘stlaringizga yuboring — ular ham ob-havoni tez bilib olishsin.</p></div><button id="shareBtn2">📤 Do‘stlarga ulashish</button></section>
+    <p class="note">⚡ Ma’lumotlar Open-Meteo xizmatidan olinadi. Internet ulangan bo‘lishi kerak.</p>
+  </main><footer><b>Ob-Havo Uz</b> • AKBARJON COMPANY © 2026</footer><script src="script.js"></script>
+</body></html>
