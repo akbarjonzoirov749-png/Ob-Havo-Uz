@@ -1,0 +1,66 @@
+# 🌤️ Ob-Havo Uz
+
+**Ob-Havo Uz** — O‘zbekiston shahar va qishloqlari uchun ob-havo ma’lumotlarini ko‘rish imkonini beruvchi zamonaviy va qulay web-ilova.
+
+## ✨ Imkoniyatlar
+
+* 🔎 Shahar yoki qishloq nomi bo‘yicha qidirish
+* 🌡️ Hozirgi haroratni ko‘rish
+* 💧 Namlik ma’lumotlari
+* 💨 Shamol tezligini ko‘rish
+* 🌧️ Yomg‘ir va qor effektlari
+* 🌤️ Ob-havo holatiga mos dizayn
+* 📱 Telefon, planshet va kompyuter uchun moslashuvchan dizayn
+* ⚡ Tez va sodda interfeys
+* 🎨 Zamonaviy UI dizayn
+
+## 🛠️ Ishlatilgan texnologiyalar
+
+* HTML5
+* CSS3
+* JavaScript
+* Bootstrap
+* Weather API
+
+## 📁 Loyiha tuzilishi
+
+```text
+Ob-Havo-Uz/
+│
+├── index.html
+├── style.css
+├── script.js
+└── README.md
+```
+
+## 🚀 Ishga tushirish
+
+Loyihani kompyuterga yuklab oling:
+
+```bash
+git clone https://github.com/akbarjonzoirov749-png/Ob-Havo-Uz.git
+```
+
+Keyin loyiha papkasini oching:
+
+```bash
+cd Ob-Havo-Uz
+```
+
+`index.html` faylini brauzerda oching.
+
+## 🎯 Loyiha maqsadi
+
+Loyihaning asosiy maqsadi — foydalanuvchilarga kerakli joyning ob-havosini tez, qulay va tushunarli ko‘rinishda taqdim etish.
+
+## 👨‍💻 Muallif
+
+**AKBARJON**
+
+### 🏢 AKBARJON COMPANIYASI
+
+> Zamonaviy texnologiyalar bilan yaratilgan 🇺🇿
+
+---
+
+⭐ Agar loyiha sizga yoqqan bo‘lsa, GitHub repository'ga **Star** bosishni unutmang!
