@@ -1,0 +1,32 @@
+# 🌤️ Ob-Havo-Uz — O'zbekiston Ob-Havo Portali
+
+**Ob-Havo-Uz** — O'zbekistonning barcha viloyat va shaharlari uchun aniq hamda real vaqtdagi ob-havo ma'lumotlarini taqdim etuvchi zamonaviy va qulay web-ilova.
+
+---
+
+## 🚀 Asosiy Imkoniyatlar va Qulayliklar
+
+* ☀️ **Aniq Real-Vaqt Ob-Havos:** Joriy harorat, shamol tezligi, namlik darajasi va havo bosimi ko'rsatkichlari.
+* ⏱️ **Soatbay va Haftalik Prognoz:** Bugungi soatbay va kelgusi 7 kunlik ob-havo o'zgarishlari.
+* 🗺️ **O'zbekiston Xaritasi:** Barcha viloyatlar bo'yicha haroratni interaktiv xaritada kuzatish.
+* 📍 **Sevimli Joylar (Mening Joylarim):** Istalgan shaharlaringizni saqlab qo'yish va tezkor o'tish.
+* 🌙 **Tungi va Kunduzgi Rejim (Dark Mode):** Ko'zingizga qulay interfeys mavzusini tanlash.
+* 🌐 **Ko'p tillilik:** O'zbek, Rus va Ingliz tillarini qo'llab-quvvatlash.
+* 📱 **Moslashuvchan Dizayn (Responsive):** Telefon, planshet va kompyuterlarda birdek qulay ishlash.
+
+---
+
+## 🛠️ Ishlatilingan Texnologiyalar
+
+* **HTML5** & **CSS3** (Flexbox, CSS Grid, Custom Variables)
+* **JavaScript (ES6+)**
+* **Font Awesome** (Belgilar va ikonkalarga)
+* **Open-Meteo API** (Ob-havo ma'lumotlari uchun)
+
+---
+
+## 💻 Loyihani Mahalliy (Local) Ishga Tushirish
+
+1. Omborni klonlang (Clone):
+   ```bash
+   git clone [https://github.com/akbarjonzoirov749-png/Ob-Havo-Uz.git](https://github.com/akbarjonzoirov749-png/Ob-Havo-Uz.git)

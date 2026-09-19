@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ob-Havo-Uz - Aniq va Ishonchli Ob-Havo Prognozi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        sky: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        night: {
+                            800: '#0f172a',
+                            900: '#020617',
+                            card: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sky-gradient-light {
+            background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 50%, #f0f9ff 100%);
+        }
+
+        .sky-gradient-dark {
+            background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #090d16 100%);
+        }
+
+        .hero-card-light {
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+        }
+
+        .hero-card-dark {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.7);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="sky-gradient-light dark:sky-gradient-dark min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300 pb-12">
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 w-full glass-card border-b border-slate-200/50 dark:border-slate-800/50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="selectCity('Toshkent')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-400 to-sky-600 flex items-center justify-center text-white shadow-md shadow-sky-500/30 transform hover:scale-105 transition">
+                    <i class="fa-solid font-bold fa-cloud-sun text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                        Ob-Havo-Uz
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-300 font-semibold">PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="txt-subhead">O'zbekiston ob-havo xizmati</p>
+                </div>
+            </div>
+
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:flex relative flex-1 max-w-md mx-8">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Shaharni qidiring (Toshkent, Samarqand...)" 
+                    class="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-transparent focus:border-sky-500 focus:bg-white dark:focus:bg-slate-900 text-sm outline-none transition shadow-inner">
+                
+                <!-- Search Suggestions Dropdown -->
+                <div id="searchDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden z-50">
+                    <div id="searchResults" class="max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
+                        <!-- Dynamic Results -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Language Selector -->
+                <div class="relative">
+                    <button onclick="toggleLangMenu()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        <i class="fa-solid fa-globe text-sky-500"></i>
+                        <span id="currentLangText">O'zbek</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-60"></i>
+                    </button>
+                    <div id="langMenu" class="hidden absolute right-0 mt-2 w-32 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 z-50 text-xs font-medium">
+                        <button onclick="setLanguage('uz')" class="w-full text-left px-4 py-2 hover:bg-sky-50 dark:hover:bg-slate-700/50 flex items-center justify-between">
+                            O'zbekcha <span class="text-xs">🇺🇿</span>
+                        </button>
+                        <button onclick="setLanguage('ru')" class="w-full text-left px-4 py-2 hover:bg-sky-50 dark:hover:bg-slate-700/50 flex items-center justify-between">
+                            Русский <span class="text-xs">🇷🇺</span>
+                        </button>
+                        <button onclick="setLanguage('en')" class="w-full text-left px-4 py-2 hover:bg-sky-50 dark:hover:bg-slate-700/50 flex items-center justify-between">
+                            English <span class="text-xs">🇬🇧</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- Settings Button -->
+                <button onclick="openSettingsModal()" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition relative">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar (Mobile View) -->
+        <div class="px-4 pb-3 md:hidden">
+            <div class="relative w-full">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInputMobile" oninput="handleSearch(this.value)" placeholder="Shaharni qidiring..." 
+                    class="w-full pl-11 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-transparent text-sm outline-none">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        
+        <!-- Top Section Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Hero Dashboard Card (Left 7 cols on LG) -->
+            <div class="lg:col-span-7 flex flex-col justify-between hero-card-light dark:hero-card-dark text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden min-h-[380px]">
+                
+                <!-- Background Skyline Silhouette Decoration -->
+                <div class="absolute bottom-0 left-0 right-0 h-32 opacity-15 pointer-events-none bg-repeat-x bg-bottom" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1000 120\' fill=\'%23ffffff\'><path d=\'M0,120 L0,90 L20,90 L20,70 L30,70 L30,90 L50,90 L50,40 L70,40 L70,90 L100,90 L100,30 L115,10 L130,30 L130,90 L160,90 L160,60 L180,60 L180,90 L220,90 L220,20 L250,20 L250,90 L300,90 L300,80 L320,80 L320,90 L380,90 L380,50 L410,50 L410,90 L450,90 L450,10 L480,10 L480,90 L520,90 L520,60 L550,60 L550,90 L600,90 L600,40 L630,40 L630,90 L680,90 L680,70 L710,70 L710,90 L780,90 L780,30 L810,30 L810,90 L870,90 L870,50 L900,50 L900,90 L1000,90 L1000,120 Z\'/></svg>');"></div>
+                
+                <!-- Top Info Bar inside Hero -->
+                <div class="flex items-center justify-between z-10">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="heroCity" class="text-2xl sm:text-3xl font-extrabold tracking-wide">Toshkent</span>
+                            <span class="bg-white/20 backdrop-blur-md text-xs px-2.5 py-1 rounded-full font-medium" id="heroCountry">O'zbekiston</span>
+                        </div>
+                        <p id="heroDate" class="text-xs sm:text-sm text-sky-100 font-medium mt-1">Bugun, 22 Iyul, Payshanba</p>
+                    </div>
+                    <button onclick="toggleFavoriteCurrent()" id="favBtn" class="w-10 h-10 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur-md flex items-center justify-center transition">
+                        <i class="fa-regular fa-star text-lg" id="favIcon"></i>
+                    </button>
+                </div>
+
+                <!-- Main Temp Display -->
+                <div class="my-6 z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-baseline gap-2">
+                            <span id="heroTemp" class="text-6xl sm:text-7xl font-black tracking-tight">28</span>
+                            <span class="text-4xl font-light">°C</span>
+                        </div>
+                        <p id="heroCondition" class="text-lg font-semibold text-sky-100 mt-1 flex items-center gap-2">
+                            <span>Ochiq osmon</span>
+                        </p>
+                    </div>
+
+                    <!-- Animated Weather Icon -->
+                    <div class="self-center sm:self-auto flex flex-col items-center">
+                        <div id="heroIconContainer" class="text-7xl sm:text-8xl filter drop-shadow-lg transform hover:scale-110 transition duration-300">
+                            <i class="fa-solid fa-sun text-amber-300 animate-pulse"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Indicators Grid -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 z-10 pt-4 border-t border-white/20">
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 text-center">
+                        <p class="text-[11px] uppercase tracking-wider text-sky-100 font-semibold" id="lbl-wind">Shamol</p>
+                        <p id="heroWind" class="text-sm sm:text-base font-bold mt-1">12 km/s</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 text-center">
+                        <p class="text-[11px] uppercase tracking-wider text-sky-100 font-semibold" id="lbl-humidity">Namlik</p>
+                        <p id="heroHumidity" class="text-sm sm:text-base font-bold mt-1">45%</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 text-center">
+                        <p class="text-[11px] uppercase tracking-wider text-sky-100 font-semibold" id="lbl-pressure">Bosim</p>
+                        <p id="heroPressure" class="text-sm sm:text-base font-bold mt-1">1010 hPa</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved Locations / Quick City Select (Right 5 cols on LG) -->
+            <div class="lg:col-span-5 flex flex-col justify-between glass-card rounded-3xl p-6 shadow-lg">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-bold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-sky-500"></i>
+                            <span id="lbl-my-places">Mening Joylarim</span>
+                        </h2>
+                        <button onclick="openAddCityModal()" class="text-xs text-sky-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> <span id="lbl-add-place">Yangi joy</span>
+                        </button>
+                    </div>
+
+                    <!-- Cities List -->
+                    <div id="savedCitiesList" class="space-y-2.5 max-h-[290px] overflow-y-auto pr-1">
+                        <!-- Dynamic City Cards -->
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span id="lbl-footer-note">O'zbekiston bo'ylab batafsil ob-havo</span>
+                    <span class="inline-flex items-center gap-1 font-semibold text-emerald-500">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Live updates
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hourly Forecast Section -->
+        <section class="mt-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-sky-500"></i>
+                    <span id="lbl-hourly">Bugungi soatbay prognoz</span>
+                </h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="scrollHourly('left')" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button onclick="scrollHourly('right')" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Hourly Container -->
+            <div id="hourlyContainer" class="flex gap-4 overflow-x-auto pb-4 pt-1 no-scrollbar scroll-smooth">
+                <!-- Dynamic Hourly Cards -->
+            </div>
+        </section>
+
+        <!-- Middle Section: 7-Day Forecast + Uzbekistan Interactive Map -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+            
+            <!-- 7-Day Forecast (7 cols) -->
+            <div class="lg:col-span-7 glass-card rounded-3xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-days text-sky-500"></i>
+                        <span id="lbl-weekly">Haftalik prognoz</span>
+                    </h2>
+                    <span class="text-xs bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-300 px-3 py-1 rounded-full font-bold">7 kunlik</span>
+                </div>
+
+                <div id="weeklyForecastList" class="space-y-3">
+                    <!-- Dynamic Weekly Forecast Items -->
+                </div>
+            </div>
+
+            <!-- Uzbekistan Map Preview & Regional Overview (5 cols) -->
+            <div class="lg:col-span-5 glass-card rounded-3xl p-6 shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-map-location-dot text-sky-500"></i>
+                            <span id="lbl-map-title">O'zbekiston xaritasi</span>
+                        </h2>
+                        <span class="text-xs text-slate-500">Hududlar bo'yicha</span>
+                    </div>
+
+                    <!-- Styled Map Visual Box -->
+                    <div class="relative w-full h-56 bg-sky-100/70 dark:bg-slate-800/80 rounded-2xl overflow-hidden border border-sky-200/50 dark:border-slate-700/50 p-3 flex items-center justify-center">
+                        <!-- Stylized SVG Map of Uzbekistan -->
+                        <svg class="w-full h-full opacity-80" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Simplified Region Shapes -->
+                            <path d="M 40 120 L 120 70 L 190 90 L 220 150 L 160 200 L 90 190 Z" class="fill-sky-300/40 dark:fill-sky-800/40 stroke-sky-500" stroke-width="2"/>
+                            <path d="M 190 90 L 300 100 L 320 180 L 220 150 Z" class="fill-sky-400/40 dark:fill-sky-700/40 stroke-sky-500" stroke-width="2"/>
+                            <path d="M 300 100 L 410 110 L 450 170 L 380 220 L 320 180 Z" class="fill-sky-300/40 dark:fill-sky-800/40 stroke-sky-500" stroke-width="2"/>
+                            <path d="M 380 220 L 450 170 L 470 230 L 410 260 Z" class="fill-sky-500/30 stroke-sky-500" stroke-width="2"/>
+                        </svg>
+
+                        <!-- Floating Temperature Badges on Map -->
+                        <button onclick="selectCity('Nukus')" class="absolute top-12 left-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Nukus</span> <span class="text-sky-600 dark:text-sky-400">26°</span>
+                        </button>
+                        
+                        <button onclick="selectCity('Navoiy')" class="absolute top-20 left-44 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Navoiy</span> <span class="text-sky-600 dark:text-sky-400">28°</span>
+                        </button>
+
+                        <button onclick="selectCity('Buxoro')" class="absolute top-32 left-36 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Buxoro</span> <span class="text-sky-600 dark:text-sky-400">30°</span>
+                        </button>
+
+                        <button onclick="selectCity('Toshkent')" class="absolute top-16 right-20 bg-sky-500 text-white backdrop-blur-md px-2 py-1 rounded-lg text-[11px] font-extrabold shadow-lg hover:scale-110 transition flex items-center gap-1 ring-2 ring-white dark:ring-slate-800">
+                            <span>Toshkent</span> <span>28°</span>
+                        </button>
+
+                        <button onclick="selectCity('Samarqand')" class="absolute top-36 right-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Samarqand</span> <span class="text-sky-600 dark:text-sky-400">30°</span>
+                        </button>
+
+                        <button onclick="selectCity('Qarshi')" class="absolute bottom-10 right-36 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Qarshi</span> <span class="text-sky-600 dark:text-sky-400">31°</span>
+                        </button>
+
+                        <button onclick="selectCity('Andijon')" class="absolute top-28 right-8 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold shadow-md hover:scale-110 transition flex items-center gap-1 border border-slate-200 dark:border-slate-700">
+                            <span>Andijon</span> <span class="text-sky-600 dark:text-sky-400">27°</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-sky-50 dark:bg-slate-800/50 p-3.5 rounded-2xl border border-sky-100 dark:border-slate-700 text-xs">
+                    <p class="font-bold text-sky-800 dark:text-sky-300 flex items-center gap-1.5 mb-1">
+                        <i class="fa-solid fa-circle-info"></i> <span id="lbl-tip-title">Maslahat</span>
+                    </p>
+                    <p class="text-slate-600 dark:text-slate-300" id="lbl-tip-body">Xaritadagi shaharlar ustiga bosib, tegishli hudud ob-havosini ko'rishingiz mumkin.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Drawer / Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="glass-card bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transform scale-95 transition-transform duration-300" id="settingsContent">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <h3 class="font-extrabold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-sky-500"></i>
+                    <span id="lbl-settings-title">Sozlamalar</span>
+                </h3>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="py-4 space-y-4">
+                <!-- Push Notifications -->
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200" id="lbl-notif">Xabarnomalar</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" id="lbl-notif-sub">Kunlik ob-havo xulosasi</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
+                    </label>
+                </div>
+
+                <!-- Theme Choice -->
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200" id="lbl-theme">Mavzu</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400" id="lbl-theme-sub">Tungi yoki kunduzgi rejim</p>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="px-3 py-1.5 rounded-xl bg-sky-500 text-white text-xs font-bold shadow-sm">
+                        O'zgartirish
+                    </button>
+                </div>
+
+                <!-- Units Selection -->
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <div>
+                        <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Birliklar</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Harorat o'lchov birligi</p>
+                    </div>
+                    <span class="text-xs font-extrabold bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-300 px-3 py-1.5 rounded-xl">°C (Selsiy)</span>
+                </div>
+
+                <!-- App Version -->
+                <div class="pt-2 text-center text-xs text-slate-400">
+                    <p class="font-semibold">Ob-Havo-Uz App</p>
+                    <p>Versiya: 1.0.1 (Build 2026)</p>
+                </div>
+            </div>
+
+            <button onclick="closeSettingsModal()" class="w-full py-3 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-lg shadow-sky-500/30 transition">
+                Tayyor
+            </button>
+        </div>
+    </div>
+
+    <!-- Add City Modal -->
+    <div id="addCityModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <h3 class="font-extrabold text-lg text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-plus text-sky-500"></i> Yangi shahar qo'shish
+            </h3>
+            <div class="space-y-2 mb-6 max-h-60 overflow-y-auto" id="allCitiesSelectable">
+                <!-- Dynamic City Add Buttons -->
+            </div>
+            <button onclick="closeAddCityModal()" class="w-full py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs">
+                Yopish
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Database of Weather Data for Uzbekistan Cities
+        const weatherData = {
+            "Toshkent": {
+                country: "O'zbekiston",
+                temp: 28,
+                condition: { uz: "Ochiq osmon", en: "Clear Sky", ru: "Ясно" },
+                icon: "fa-sun text-amber-400 animate-pulse",
+                wind: "12 km/s",
+                humidity: "45%",
+                pressure: "1010 hPa",
+                hourly: [
+                    { time: "14:00", temp: 28, icon: "fa-sun text-amber-400" },
+                    { time: "15:00", temp: 29, icon: "fa-sun text-amber-400" },
+                    { time: "16:00", temp: 29, icon: "fa-cloud-sun text-amber-300" },
+                    { time: "17:00", temp: 28, icon: "fa-cloud-sun text-amber-300" },
+                    { time: "18:00", temp: 27, icon: "fa-sun text-amber-400" },
+                    { time: "19:00", temp: 25, icon: "fa-moon text-indigo-300" },
+                    { time: "20:00", temp: 23, icon: "fa-moon text-indigo-300" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 30, min: 19, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" },
+                    { date: "23 Iyul", max: 30, min: 19, cond: "Qisman bulutli", icon: "fa-cloud-sun text-amber-300" },
+                    { date: "Yakshanba (Dam olish)", max: 39, min: 24, cond: "Juda issiq!", icon: "fa-fire text-orange-500", highlight: true },
+                    { date: "25 Iyul", max: 30, min: 19, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" },
+                    { date: "27 Iyul", max: 29, min: 19, cond: "Yomg'ir kutilmoqda", icon: "fa-cloud-rain text-sky-400" },
+                    { date: "28 Iyul", max: 27, min: 18, cond: "Qisman bulutli", icon: "fa-cloud-sun text-amber-300" },
+                    { date: "29 Iyul", max: 31, min: 20, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" }
+                ]
+            },
+            "Samarqand": {
+                country: "O'zbekiston",
+                temp: 30,
+                condition: { uz: "Qisman bulutli", en: "Partly Cloudy", ru: "Облачно" },
+                icon: "fa-cloud-sun text-amber-300",
+                wind: "14 km/s",
+                humidity: "38%",
+                pressure: "1008 hPa",
+                hourly: [
+                    { time: "14:00", temp: 30, icon: "fa-cloud-sun text-amber-300" },
+                    { time: "15:00", temp: 31, icon: "fa-sun text-amber-400" },
+                    { time: "16:00", temp: 31, icon: "fa-sun text-amber-400" },
+                    { time: "17:00", temp: 29, icon: "fa-cloud-sun text-amber-300" },
+                    { time: "18:00", temp: 28, icon: "fa-sun text-amber-400" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 31, min: 20, cond: "Qisman bulutli", icon: "fa-cloud-sun text-amber-300" },
+                    { date: "23 Iyul", max: 32, min: 21, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" },
+                    { date: "Yakshanba", max: 38, min: 25, cond: "Issiq ob-havo", icon: "fa-sun text-amber-500" },
+                    { date: "25 Iyul", max: 32, min: 20, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" },
+                    { date: "27 Iyul", max: 28, min: 18, cond: "Yomg'ir kutilmoqda", icon: "fa-cloud-showers-heavy text-blue-400" }
+                ]
+            },
+            "Buxoro": {
+                country: "O'zbekiston",
+                temp: 32,
+                condition: { uz: "Ochiq va issiq", en: "Sunny & Hot", ru: "Жарко" },
+                icon: "fa-sun text-amber-500",
+                wind: "10 km/s",
+                humidity: "30%",
+                pressure: "1012 hPa",
+                hourly: [
+                    { time: "14:00", temp: 32, icon: "fa-sun text-amber-500" },
+                    { time: "15:00", temp: 33, icon: "fa-sun text-amber-500" },
+                    { time: "16:00", temp: 33, icon: "fa-sun text-amber-500" },
+                    { time: "17:00", temp: 31, icon: "fa-sun text-amber-400" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 33, min: 22, cond: "Ochiq osmon", icon: "fa-sun text-amber-500" },
+                    { date: "23 Iyul", max: 34, min: 23, cond: "Ochiq osmon", icon: "fa-sun text-amber-500" },
+                    { date: "Yakshanba", max: 40, min: 26, cond: "Juda issiq!", icon: "fa-fire text-red-500", highlight: true }
+                ]
+            },
+            "Andijon": {
+                country: "O'zbekiston",
+                temp: 27,
+                condition: { uz: "Yengil shabada", en: "Light Breeze", ru: "Легкий ветерок" },
+                icon: "fa-cloud-sun text-amber-300",
+                wind: "15 km/s",
+                humidity: "50%",
+                pressure: "1011 hPa",
+                hourly: [
+                    { time: "14:00", temp: 27, icon: "fa-cloud-sun text-amber-300" },
+                    { time: "15:00", temp: 28, icon: "fa-sun text-amber-400" },
+                    { time: "16:00", temp: 27, icon: "fa-cloud-sun text-amber-300" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 28, min: 18, cond: "Qisman bulutli", icon: "fa-cloud-sun text-amber-300" },
+                    { date: "23 Iyul", max: 29, min: 19, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" }
+                ]
+            },
+            "Farg'ona": {
+                country: "O'zbekiston",
+                temp: 26,
+                condition: { uz: "Bulutli", en: "Cloudy", ru: "Облачно" },
+                icon: "fa-cloud text-slate-400",
+                wind: "11 km/s",
+                humidity: "52%",
+                pressure: "1013 hPa",
+                hourly: [
+                    { time: "14:00", temp: 26, icon: "fa-cloud text-slate-400" },
+                    { time: "15:00", temp: 27, icon: "fa-cloud-sun text-amber-300" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 27, min: 17, cond: "Bulutli", icon: "fa-cloud text-slate-400" },
+                    { date: "23 Iyul", max: 28, min: 18, cond: "Qisman bulutli", icon: "fa-cloud-sun text-amber-300" }
+                ]
+            },
+            "Qarshi": {
+                country: "O'zbekiston",
+                temp: 31,
+                condition: { uz: "Ochiq osmon", en: "Sunny", ru: "Солнечно" },
+                icon: "fa-sun text-amber-400",
+                wind: "13 km/s",
+                humidity: "35%",
+                pressure: "1009 hPa",
+                hourly: [
+                    { time: "14:00", temp: 31, icon: "fa-sun text-amber-400" },
+                    { time: "15:00", temp: 32, icon: "fa-sun text-amber-500" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 32, min: 21, cond: "Ochiq osmon", icon: "fa-sun text-amber-400" }
+                ]
+            },
+            "Nukus": {
+                country: "O'zbekiston",
+                temp: 26,
+                condition: { uz: "Shamolli", en: "Windy", ru: "Ветрено" },
+                icon: "fa-wind text-sky-400",
+                wind: "22 km/s",
+                humidity: "40%",
+                pressure: "1014 hPa",
+                hourly: [
+                    { time: "14:00", temp: 26, icon: "fa-wind text-sky-400" }
+                ],
+                weekly: [
+                    { date: "Bugun, 22 Iyul", max: 27, min: 16, cond: "Shamolli", icon: "fa-wind text-sky-400" }
+                ]
+            }
+        };
+
+        // Application State
+        let currentCity = "Toshkent";
+        let savedCities = ["Toshkent", "Samarqand", "Buxoro", "Andijon", "Farg'ona"];
+        let favorites = ["Toshkent"];
+        let currentLang = "uz";
+
+        window.onload = function() {
+            renderCurrentCity();
+            renderSavedCities();
+            renderAllSelectableCities();
+        };
+
+        // Render Current City Weather Info
+        function renderCurrentCity() {
+            const data = weatherData[currentCity] || weatherData["Toshkent"];
+            
+            document.getElementById('heroCity').innerText = currentCity;
+            document.getElementById('heroCountry').innerText = data.country;
+            document.getElementById('heroTemp').innerText = data.temp;
+            
+            // Language dependent condition text
+            const condText = typeof data.condition === 'object' ? (data.condition[currentLang] || data.condition.uz) : data.condition;
+            document.getElementById('heroCondition').innerHTML = `<span>${condText}</span>`;
+            
+            document.getElementById('heroIconContainer').innerHTML = `<i class="fa-solid ${data.icon}"></i>`;
+            document.getElementById('heroWind').innerText = data.wind;
+            document.getElementById('heroHumidity').innerText = data.humidity;
+            document.getElementById('heroPressure').innerText = data.pressure;
+
+            // Favorite Icon update
+            const favIcon = document.getElementById('favIcon');
+            if (favorites.includes(currentCity)) {
+                favIcon.className = "fa-solid fa-star text-amber-300";
+            } else {
+                favIcon.className = "fa-regular fa-star text-white";
+            }
+
+            // Render Hourly
+            renderHourly(data.hourly);
+            
+            // Render Weekly
+            renderWeekly(data.weekly);
+        }
+
+        // Render Saved Cities List
+        function renderSavedCities() {
+            const list = document.getElementById('savedCitiesList');
+            list.innerHTML = '';
+
+            savedCities.forEach(city => {
+                const data = weatherData[city] || { temp: 25, icon: 'fa-sun text-amber-400' };
+                const isSelected = city === currentCity;
+
+                const item = document.createElement('div');
+                item.className = `p-3.5 rounded-2xl flex items-center justify-between cursor-pointer transition transform hover:scale-[1.01] ${
+                    isSelected 
+                    ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' 
+                    : 'bg-slate-100/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100'
+                }`;
+                
+                item.onclick = () => selectCity(city);
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid ${data.icon} text-lg ${isSelected ? 'text-white' : ''}"></i>
+                        <div>
+                            <p class="font-bold text-sm leading-tight">${city}</p>
+                            <p class="text-[11px] ${isSelected ? 'text-sky-100' : 'text-slate-500 dark:text-slate-400'}">${data.country || 'O\'zbekiston'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-extrabold text-base">${data.temp}°C</span>
+                        <button onclick="event.stopPropagation(); removeSavedCity('${city}')" class="opacity-60 hover:opacity-100 text-xs p-1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Render Hourly Forecast Cards
+        function renderHourly(hourlyList) {
+            const container = document.getElementById('hourlyContainer');
+            container.innerHTML = '';
+
+            if (!hourlyList) return;
+
+            hourlyList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'flex-shrink-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-3.5 w-24 text-center shadow-sm hover:shadow-md transition';
+                card.innerHTML = `
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">${item.time}</p>
+                    <div class="text-2xl my-2">
+                        <i class="fa-solid ${item.icon}"></i>
+                    </div>
+                    <p class="font-bold text-base text-slate-800 dark:text-white">${item.temp}°C</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Render Weekly Forecast
+        function renderWeekly(weeklyList) {
+            const container = document.getElementById('weeklyForecastList');
+            container.innerHTML = '';
+
+            if (!weeklyList) return;
+
+            weeklyList.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `p-3.5 rounded-2xl flex items-center justify-between border transition ${
+                    item.highlight 
+                    ? 'bg-amber-500/10 dark:bg-amber-500/20 border-amber-400/40' 
+                    : 'bg-white/60 dark:bg-slate-800/60 border-slate-200/50 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800'
+                }`;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700/60 flex items-center justify-center text-lg">
+                            <i class="fa-solid ${item.icon}"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sm text-slate-800 dark:text-slate-100">${item.date}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${item.cond}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-extrabold text-slate-800 dark:text-slate-100">${item.max}°C</span>
+                        <span class="text-xs text-slate-400 ml-1.5 font-semibold">${item.min}°C</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // City Selection
+        function selectCity(city) {
+            currentCity = city;
+            if (!savedCities.includes(city)) {
+                savedCities.push(city);
+            }
+            renderCurrentCity();
+            renderSavedCities();
+            closeSearchDropdown();
+        }
+
+        // Search Input Handling
+        function handleSearch(query) {
+            const dropdown = document.getElementById('searchDropdown');
+            const results = document.getElementById('searchResults');
+            
+            if (!query.trim()) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const filtered = Object.keys(weatherData).filter(city => 
+                city.toLowerCase().includes(query.toLowerCase())
+            );
+
+            results.innerHTML = '';
+            if (filtered.length === 0) {
+                results.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">Shahar topilmadi</div>`;
+            } else {
+                filtered.forEach(city => {
+                    const item = document.createElement('div');
+                    item.className = 'p-3 hover:bg-sky-50 dark:hover:bg-slate-700/50 cursor-pointer text-xs font-semibold flex justify-between items-center';
+                    item.innerHTML = `
+                        <span>${city}</span>
+                        <span class="text-sky-500 font-bold">${weatherData[city].temp}°C</span>
+                    `;
+                    item.onclick = () => selectCity(city);
+                    results.appendChild(item);
+                });
+            }
+
+            dropdown.classList.remove('hidden');
+        }
+
+        function closeSearchDropdown() {
+            document.getElementById('searchDropdown').classList.add('hidden');
+            document.getElementById('searchInput').value = '';
+            const mobileInput = document.getElementById('searchInputMobile');
+            if (mobileInput) mobileInput.value = '';
+        }
+
+        // Remove City
+        function removeSavedCity(city) {
+            if (savedCities.length <= 1) return;
+            savedCities = savedCities.filter(c => c !== city);
+            if (currentCity === city) {
+                currentCity = savedCities[0];
+            }
+            renderCurrentCity();
+            renderSavedCities();
+        }
+
+        // Favorite Toggle
+        function toggleFavoriteCurrent() {
+            if (favorites.includes(currentCity)) {
+                favorites = favorites.filter(c => c !== currentCity);
+            } else {
+                favorites.push(currentCity);
+            }
+            renderCurrentCity();
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const themeIcon = document.getElementById('themeIcon');
+            if (isDark) {
+                themeIcon.className = "fa-solid fa-sun text-yellow-400";
+            } else {
+                themeIcon.className = "fa-solid fa-moon text-slate-600";
+            }
+        }
+
+        // Scroll Hourly Cards
+        function scrollHourly(direction) {
+            const container = document.getElementById('hourlyContainer');
+            const scrollAmount = 200;
+            if (direction === 'left') {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        // Settings Modal
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        // Add City Modal
+        function openAddCityModal() {
+            renderAllSelectableCities();
+            document.getElementById('addCityModal').classList.remove('hidden');
+        }
+        function closeAddCityModal() {
+            document.getElementById('addCityModal').classList.add('hidden');
+        }
+
+        function renderAllSelectableCities() {
+            const container = document.getElementById('allCitiesSelectable');
+            container.innerHTML = '';
+
+            Object.keys(weatherData).forEach(city => {
+                const isSaved = savedCities.includes(city);
+                const btn = document.createElement('button');
+                btn.className = `w-full p-2.5 rounded-xl text-left text-xs font-bold flex justify-between items-center ${
+                    isSaved ? 'bg-slate-100 dark:bg-slate-800 text-slate-400' : 'bg-sky-50 dark:bg-slate-800/80 hover:bg-sky-100 text-sky-700 dark:text-sky-300'
+                }`;
+                btn.disabled = isSaved;
+                btn.innerHTML = `
+                    <span>${city}</span>
+                    <span>${isSaved ? 'Qo\'shilgan' : '+ Qo\'shish'}</span>
+                `;
+                btn.onclick = () => {
+                    selectCity(city);
+                    closeAddCityModal();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // Language Menu
+        function toggleLangMenu() {
+            document.getElementById('langMenu').classList.toggle('hidden');
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('langMenu').classList.add('hidden');
+            
+            const labels = {
+                uz: { currentLang: "O'zbek", subhead: "O'zbekiston ob-havo xizmati", wind: "Shamol", humidity: "Namlik", pressure: "Bosim", myPlaces: "Mening Joylarim", addPlace: "Yangi joy", hourly: "Bugungi soatbay prognoz", weekly: "Haftalik prognoz", mapTitle: "O'zbekiston xaritasi" },
+                ru: { currentLang: "Русский", subhead: "Служба погоды Узбекистана", wind: "Ветер", humidity: "Влажность", pressure: "Давление", myPlaces: "Мои места", addPlace: "Добавить", hourly: "Почасовой прогноз", weekly: "Прогноз на неделю", mapTitle: "Карта Узбекистана" },
+                en: { currentLang: "English", subhead: "Uzbekistan Weather Service", wind: "Wind", humidity: "Humidity", pressure: "Pressure", myPlaces: "My Locations", addPlace: "Add new", hourly: "Hourly Forecast", weekly: "Weekly Forecast", mapTitle: "Uzbekistan Map" }
+            };
+
+            const l = labels[lang] || labels.uz;
+            document.getElementById('currentLangText').innerText = l.currentLang;
+            document.getElementById('txt-subhead').innerText = l.subhead;
+            document.getElementById('lbl-wind').innerText = l.wind;
+            document.getElementById('lbl-humidity').innerText = l.humidity;
+            document.getElementById('lbl-pressure').innerText = l.pressure;
+            document.getElementById('lbl-my-places').innerText = l.myPlaces;
+            document.getElementById('lbl-add-place').innerText = l.addPlace;
+            document.getElementById('lbl-hourly').innerText = l.hourly;
+            document.getElementById('lbl-weekly').innerText = l.weekly;
+            document.getElementById('lbl-map-title').innerText = l.mapTitle;
+
+            renderCurrentCity();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchBox = document.getElementById('searchInput');
+            const dropdown = document.getElementById('searchDropdown');
+            if (searchBox && dropdown && !searchBox.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
